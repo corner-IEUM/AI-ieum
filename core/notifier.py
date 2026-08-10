@@ -25,17 +25,25 @@ class Notifier:
         self.last_notified[track_id] = now
         return True
 
+    def _priority(self, proximity):
+        # 매우 가까우면 즉각 위험(1), 그 외엔 일반 정보(3)
+        return 1 if proximity >= config.DANGER_PROXIMITY else 3
+
     def build_message(self, detection):
-        """앱에 보낼 메시지 생성. 알릴 필요 없으면 None"""
+        """앱에 보낼 통일 형식 메시지. 알릴 필요 없으면 None"""
         if not self.should_notify(detection["track_id"], detection["proximity"]):
             return None
 
+        proximity = detection["proximity"]
         return {
-            "type": "obstacle",
-            "track_id": detection["track_id"],
-            "class": detection["class"],
-            "direction": detection["direction"],
-            "proximity": detection["proximity"],
+            "kind": "obstacle",
+            "priority": self._priority(proximity),
             "message": f"{detection['direction']}에 {detection['class']}",
+            "meta": {
+                "track_id": detection["track_id"],
+                "class": detection["class"],
+                "direction": detection["direction"],
+                "proximity": proximity,
+            },
             "timestamp": time.time(),
         }

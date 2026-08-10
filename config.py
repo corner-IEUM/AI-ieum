@@ -4,7 +4,7 @@ CONFIDENCE = 0.5
 HISTORY_SIZE = 10
 
 # 입력 소스 (웹캠은 0, 영상 파일은 경로)
-VIDEO_SOURCE = "data/30s.mp4"
+VIDEO_SOURCE = "data/419민주묘지역-다이소.mp4"
 
 # 알림 필터 설정
 PROXIMITY_THRESHOLD = 0.6   # 이 근접도 이상만 알림
@@ -17,3 +17,6 @@ TTS_LANG = "ko"
 # 서버 설정
 HOST = "0.0.0.0"
 PORT = 8000
+
+# 즉각 위험으로 볼 근접도 (이 이상이면 최우선 안내)
+DANGER_PROXIMITY = 0.8
