@@ -32,10 +32,16 @@ def main():
         analyzed.sort(key=lambda d: d["proximity"], reverse=True)
 
         for d in analyzed:
-            if speaker.announce(d):
-                print(f"[음성] {d['direction']}에 {d['class']} (근접도 {d['proximity']})")
-                break  # 한 프레임에 하나만 안내
+            # 신호등이고 색상이 판단된 경우, 출력 문구에 색상 반영
+            class_label = d["class"]
+            if d.get("light_color") == "red":
+                class_label = "빨간불 신호등"
+            elif d.get("light_color") == "green":
+                class_label = "초록불 신호등"
 
+            if speaker.announce(d):
+                print(f"[음성] {d['direction']}에 {class_label} (근접도 {d['proximity']})")
+                break  # 한 프레임에 하나만 안내
         cv2.imshow("ieum", annotated)
         if cv2.waitKey(1) == ord("q"):
             break
