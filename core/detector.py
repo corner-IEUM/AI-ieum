@@ -1,5 +1,6 @@
 from ultralytics import YOLO
 from collections import defaultdict, deque, Counter
+from core.traffic_light import get_traffic_light_color # 신호등 색상 (빨강,초록) 판단함수 불러오기
 
 
 class Detector:
@@ -32,13 +33,20 @@ class Detector:
 
             self.class_history[track_id].append(cls_name)
             stable_cls = self._get_stable_class(track_id)
-
-            detections.append({
+            """감지된 객체 하나의 정보를 딕셔너리로 정리"""
+            detection ={
                 "track_id": track_id,
                 "class": stable_cls,
                 "conf": float(box.conf),
                 "xyxy": box.xyxy[0].tolist(),
-            })
+            }
+            """감지된 객체가 '신호등'일 경우에만 색상 판단 함수를 추가로 호출"""
+            """신호등이 아닌 사람,자동차 등은 이 로직을 타지 않음 -> 속도 절약 가능"""
+            if stable_cls == "traffic light":
+                """frame(전체 화면)과 신호등 박스 좌표를 넘겨서 red/green/unknown 판단"""
+                detection["light_color"] = get_traffic_light_color(frame,detection["xyxy"])
+            """완성된 detection 정보를 최종 리스트에다가 추가"""
+            detections.append(detection)
 
         return detections, results[0].plot()
 
@@ -48,3 +56,4 @@ class Detector:
         if not history:
             return None
         return Counter(history).most_common(1)[0][0]
+

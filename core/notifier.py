@@ -35,15 +35,24 @@ class Notifier:
             return None
 
         proximity = detection["proximity"]
+
+        # 신호등이고 색상이 판단된 경우, 메시지에 색상 정보 반영
+        class_label = detection["class"]
+        if detection.get("light_color") == "red":
+            class_label = "빨간불 신호등"
+        elif detection.get("light_color") == "green":
+            class_label = "초록불 신호등"
+
         return {
             "kind": "obstacle",
             "priority": self._priority(proximity),
-            "message": f"{detection['direction']}에 {detection['class']}",
+            "message": f"{detection['direction']}에 {class_label}",
             "meta": {
                 "track_id": detection["track_id"],
                 "class": detection["class"],
                 "direction": detection["direction"],
                 "proximity": proximity,
+                "light_color": detection.get("light_color"),
             },
             "timestamp": time.time(),
         }
