@@ -1,1 +1,6 @@
 *.mp4
+.venv311/
+__pycache__/
+*.pyc
+.idea/
+.env
