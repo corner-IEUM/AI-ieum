@@ -20,7 +20,9 @@ class Detector:
             detections: [{track_id, class, conf, xyxy}, ...]
             annotated: 바운딩 박스가 그려진 프레임
         """
-        results = self.model.track(frame, conf=self.conf, persist=True, verbose=False)
+        # imgsz=768: nano 모델 기준 640 기본값보다 작은 객체 인식률을 높이면서도 CPU에서 감당 가능한 해상도
+        # tracker="bytetrack.yaml": ultralytics에 기본 내장된 설정 파일(파일명만 지정하면 자동 탐색됨)
+        results = self.model.track(frame, conf=self.conf, persist=True, verbose=False, imgsz=768, tracker="bytetrack.yaml")
         detections = []
 
         for box in results[0].boxes:
