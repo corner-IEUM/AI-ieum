@@ -2,6 +2,19 @@ import time
 
 import config
 
+# YOLO 클래스명(영어)을 한국어로 변환 — TTS가 language='ko-KR'로 고정돼 있어서, 문장 중간에
+# 번역 안 된 영어 단어(예: "정면에 person")가 섞이면 음성 엔진이 그 부분에서 지지직거리는
+# 문제가 있었다. 매핑에 없는 클래스는 원본 영어명을 그대로 쓴다(치직거림은 남지만 안내 자체는 됨).
+CLASS_KO = {
+    "person": "사람",
+    "bicycle": "자전거",
+    "motorcycle": "오토바이",
+    "car": "자동차",
+    "bus": "버스",
+    "truck": "트럭",
+    "traffic light": "신호등",
+}
+
 
 class Notifier:
     """어떤 감지 결과를 알릴지 판단하는 클래스 (음성 재생은 앱에서 담당)"""
@@ -37,7 +50,7 @@ class Notifier:
         proximity = detection["proximity"]
 
         # 신호등이고 색상이 판단된 경우, 메시지에 색상 정보 반영
-        class_label = detection["class"]
+        class_label = CLASS_KO.get(detection["class"], detection["class"])
         if detection.get("light_color") == "red":
             class_label = "빨간불 신호등"
         elif detection.get("light_color") == "green":
